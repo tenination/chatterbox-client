@@ -14,7 +14,16 @@ var app = {
 //   roomname: 'lobby'
 // };
 
-app.init = function() {};
+app.init = function() {
+  $('.username').on('click', function(){
+    app.handleUsernameClick();
+  });
+  $('#send').on('submit', function(){
+    console.log('BUTTON CLICKED');
+    app.handleSubmit();
+  });
+
+};
 app.send = function(message) {
 
   $.ajax({
@@ -58,9 +67,15 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(message) {
-  var $orig = $('<p></p>');
-  $orig.text(message.text);
-  $('#chats').append($orig);
+  var $message = $('<div></div>');
+  var $username = $('<p></p>');
+  $username.addClass('username');
+  $username.text(message.username);
+  $message.text(message.text);
+  $('#chats').append($username);
+  $('.username').append($message);
+  //$('body').append('#chats');
+
 
 };
 
@@ -69,6 +84,13 @@ app.renderRoom = function(room) {
   $orig.text(room);
   $('#roomSelect').append($orig);
 
+};
+
+app.handleUsernameClick = function() {
+  //add clicked username to firends
+};
+app.handleSubmit = function() {
+  console.log('Submit pressed!');
 };
 
 
