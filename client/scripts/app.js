@@ -25,13 +25,25 @@ app.init = function() {
   });
 
   $( "#target" ).submit(function( event ) {
-    alert( "Handler for .submit() called." );
+    //alert( "Handler for .submit() called." );
     event.preventDefault();
+    console.log("SUP");
+    var value = $("#messageText").val(); 
+    var usernameInput = window.location.search.substring(10, window.location.search.length);
+    var userText = usernameInput.split("%20").join(' ');
+    
+    console.log('THE USERNAME IS', userText);
     app.send({
-      username: 'shawndrost',
-      text: 'SATURDAYS ARE AWESOME!!',
-      roomname: '4chan'
+      username: userText,
+      text: value,
+      roomname: 'MiddleEarth'
     });
+    
+    $rand = $('<div></div>');
+    $rand.text("THIS SHOULD BE ON THE PAGE");
+    $('#chats').append($rand);
+    $('#chats').html('');
+    //app.clearMessages();
     app.fetch();
   
   });
@@ -67,9 +79,12 @@ app.fetch = function() {
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Data was retreived');
-      console.log(data);
+      console.log('DATA is equal to', data);
       for (var i = 0; i < data.results.length; i++) {
-        app.renderMessage(data.results[i]);
+        if (data.results[i].text) {
+          console.log('Message is being rendered');
+          app.renderMessage(data.results[i]);
+        }
       }
     },
     error: function (data) {
@@ -88,18 +103,61 @@ app.clearMessages = function() {
 
 };
 
+//Version 2.0
 app.renderMessage = function(message) {
   var $message = $('<div></div>');
   var $username = $('<p></p>');
+  $message.addClass('message');
   $username.addClass('username');
   $username.text(message.username);
   $message.text(message.text);
-  $('#chats').append($username);
-  $('.username').append($message);
+ 
+  $('#chats').append($message);
+  $message.append($username);
+  $('#chats').append($message);
+
+  
+  //$('#chats').append($username);
+  //$('.username').append($message);
   //$('body').append('#chats');
-
-
 };
+
+
+// //Version 3.0
+// app.renderMessage = function(message) {
+//   var $message = $('<div class="message"></div>');
+//   var $username = $('<p class="username"></p>');
+//   var uniqueID = Math.random();
+//   uniqueID = JSON.stringify(uniqueID);
+//   // $message.addClass('message');
+//   // $username.addClass('username');
+//   $username.addClass(uniqueID);
+//   $username.text(message.username);
+//   $message.text(message.text);
+//   $('#chats').append($username);
+//   uniqueID = '.' + uniqueID;
+//   $(uniqueID).append($message);
+//   //$('body').append('#chats');
+
+
+// };
+
+
+
+
+// //Version 1.0
+// app.renderMessage = function(message) {
+//   var $message = $('<div></div>');
+//   var $username = $('<p></p>');
+//   $username.addClass('username');
+//   $username.text(message.username);
+//   $message.text(message.text);
+//   $('#chats').append($username);
+//   $('.username').append($message);
+//   //$('body').append('#chats');
+
+
+// };
 
 app.renderRoom = function(room) {
   var $orig = $('<p></p>');
