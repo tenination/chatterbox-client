@@ -15,12 +15,25 @@ var app = {
 // };
 
 app.init = function() {
+  app.fetch();
   $('.username').on('click', function(){
     app.handleUsernameClick();
   });
   $('#send').on('submit', function(){
     console.log('BUTTON CLICKED');
     app.handleSubmit();
+  });
+
+  $( "#target" ).submit(function( event ) {
+    alert( "Handler for .submit() called." );
+    event.preventDefault();
+    app.send({
+      username: 'shawndrost',
+      text: 'SATURDAYS ARE AWESOME!!',
+      roomname: '4chan'
+    });
+    app.fetch();
+  
   });
 
 };
@@ -55,7 +68,7 @@ app.fetch = function() {
     success: function (data) {
       console.log('chatterbox: Data was retreived');
       console.log(data);
-      for (var i = data.results.length - 1; i >= 0 ; i--) {
+      for (var i = 0; i < data.results.length; i++) {
         app.renderMessage(data.results[i]);
       }
     },
