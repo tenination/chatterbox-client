@@ -30,10 +30,11 @@ app.send = function(message) {
     // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.atx.hackreactor.com/chatterbox/classes/messages',
     type: 'POST',
-    data: message,
+    data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
+      console.log('This is the console log of data', data);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -45,20 +46,28 @@ app.send = function(message) {
 
 };
 app.fetch = function() {
-  $.ajax({
+  var fetch = $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: undefined,
+    url: 'http://parse.atx.hackreactor.com/chatterbox/classes/messages',
     type: 'GET',
-    data: message,
+    data: {order:'-createdAt'},
     contentType: 'application/json',
     success: function (data) {
-      console.log('chatterbox: Message sent');
+      console.log('chatterbox: Data was retreived');
+      console.log(data);
+      for (var i = data.results.length - 1; i >= 0 ; i--) {
+        app.renderMessage(data.results[i]);
+      }
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-      console.error('chatterbox: Failed to send message', data);
+      console.error('chatterbox: Failed to fetch message', data);
     }
   });
+
+  $('body').append(fetch);
+  console.log("Fetch: ",fetch);
+  console.log("Fetch: ",typeof fetch);
 };
 app.clearMessages = function() {
 
