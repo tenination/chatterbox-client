@@ -24,7 +24,6 @@ app.init = function() {
   $( "#target" ).submit(function( event ) {
     //alert( "Handler for .submit() called." );
     event.preventDefault();
-    console.log("SUP");
     var value = $("#messageText").val(); 
     var usernameInput = window.location.search.substring(10, window.location.search.length);
     var userText = usernameInput.split("%20").join(' ');
@@ -45,6 +44,17 @@ app.init = function() {
     //app.clearMessages();
     app.fetch();
   
+  });
+  
+  $( "#pickRoom" ).submit(function( event ) {
+    event.preventDefault();
+    var newRoom = $('#room').val();
+    var $newRoom = $('<option></option>');
+    $newRoom.text(newRoom);
+    $('.chatRoom').append($newRoom);
+    $('.chatRoom').val(newRoom);
+    //$("#mydropdownlist").val("thevalue");
+    
   });
 
 };
@@ -90,6 +100,10 @@ app.fetch = function() {
       console.log(roomNames);
       roomNames = _.uniq(roomNames);
       $('.chatRoom').html('');
+      var $allRooms = $('<option></option');
+      $allRooms.text('All Rooms');
+      $allRooms.val('All Rooms');
+      $('.chatRoom').append($allRooms);
       for (var room of roomNames) {
         var $roomName = $('<option></option>');
         $roomName.text(room);
@@ -137,7 +151,8 @@ app.renderRoom = function(room) {
       console.log('DATA is equal to', data);
       $('#chats').html('');
       for (var i = 0; i < data.results.length; i++) {
-        if (data.results[i].roomname === room) {
+        console.log(room);
+        if (data.results[i].roomname === room || room === "All Rooms") {
           app.renderMessage(data.results[i]);
         } 
       }
