@@ -53,7 +53,8 @@ app.init = function() {
     $newRoom.text(newRoom);
     $('.chatRoom').append($newRoom);
     $('.chatRoom').val(newRoom);
-    //$("#mydropdownlist").val("thevalue");
+    app.renderRoom(newRoom);
+    
     
   });
 
@@ -84,7 +85,7 @@ app.fetch = function() {
     // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.atx.hackreactor.com/chatterbox/classes/messages',
     type: 'GET',
-    data: {order:'-createdAt'},
+    data: {order:'-createdAt', limit:100},
     contentType: 'application/json',
     success: function (data) {
       var roomNames = [];
