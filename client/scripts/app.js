@@ -16,13 +16,6 @@ var app = {
 
 app.init = function() {
   app.fetch();
-  $('.username').on('click', function(){
-    app.handleUsernameClick();
-  });
-  $('#send').on('submit', function(){
-    console.log('BUTTON CLICKED');
-    app.handleSubmit();
-  });
 
   $( "#target" ).submit(function( event ) {
     //alert( "Handler for .submit() called." );
@@ -78,12 +71,26 @@ app.fetch = function() {
     data: {order:'-createdAt'},
     contentType: 'application/json',
     success: function (data) {
+      var roomNames = [];
       console.log('chatterbox: Data was retreived');
       console.log('DATA is equal to', data);
       for (var i = 0; i < data.results.length; i++) {
         if (data.results[i].text) {
-          console.log('Message is being rendered');
           app.renderMessage(data.results[i]);
+        }
+        
+        //capture all unique roomnames and store them in an array object
+        roomNames.push(data.results[i].roomname);
+        
+        
+      }
+      roomNames = _.uniq(roomNames);
+      console.log(roomNames);
+      for (var room of roomNames) {
+        var $roomName = $('<option></option>');
+        $roomName.text(room);
+        if (room !== undefined) {
+          $('.chatRoom').append($roomName);  
         }
       }
     },
