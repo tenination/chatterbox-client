@@ -16,6 +16,10 @@ var app = {
 
 app.init = function() {
   app.fetch();
+  
+  $('.chatRoom').change( function() {
+    app.renderRoom(this.value);
+  });
 
   $( "#target" ).submit(function( event ) {
     //alert( "Handler for .submit() called." );
@@ -29,8 +33,10 @@ app.init = function() {
     app.send({
       username: userText,
       text: value,
-      roomname: 'MiddleEarth'
+      roomname: $('.chatRoom').val()
     });
+    
+    console.log('THE SELECTED CHATROOM IS', $('.chatRoom').val());
     
     $rand = $('<div></div>');
     $rand.text("THIS SHOULD BE ON THE PAGE");
@@ -72,20 +78,18 @@ app.fetch = function() {
     contentType: 'application/json',
     success: function (data) {
       var roomNames = [];
-      console.log('chatterbox: Data was retreived');
       console.log('DATA is equal to', data);
+      
       for (var i = 0; i < data.results.length; i++) {
         if (data.results[i].text) {
           app.renderMessage(data.results[i]);
+
         }
-        
-        //capture all unique roomnames and store them in an array object
-        roomNames.push(data.results[i].roomname);
-        
-        
+        roomNames.push(data.results[i].roomname);  
       }
-      roomNames = _.uniq(roomNames);
       console.log(roomNames);
+      roomNames = _.uniq(roomNames);
+      $('.chatRoom').html('');
       for (var room of roomNames) {
         var $roomName = $('<option></option>');
         $roomName.text(room);
@@ -100,9 +104,6 @@ app.fetch = function() {
     }
   });
 
-  $('body').append(fetch);
-  console.log("Fetch: ",fetch);
-  console.log("Fetch: ",typeof fetch);
 };
 app.clearMessages = function() {
 
@@ -122,54 +123,31 @@ app.renderMessage = function(message) {
   $('#chats').append($message);
   $message.append($username);
   $('#chats').append($message);
-
-  
-  //$('#chats').append($username);
-  //$('.username').append($message);
-  //$('body').append('#chats');
 };
 
 
-// //Version 3.0
-// app.renderMessage = function(message) {
-//   var $message = $('<div class="message"></div>');
-//   var $username = $('<p class="username"></p>');
-//   var uniqueID = Math.random();
-//   uniqueID = JSON.stringify(uniqueID);
-//   // $message.addClass('message');
-//   // $username.addClass('username');
-//   $username.addClass(uniqueID);
-//   $username.text(message.username);
-//   $message.text(message.text);
-//   $('#chats').append($username);
-//   uniqueID = '.' + uniqueID;
-//   $(uniqueID).append($message);
-//   //$('body').append('#chats');
-
-
-// };
-
-
-
-
-// //Version 1.0
-// app.renderMessage = function(message) {
-//   var $message = $('<div></div>');
-//   var $username = $('<p></p>');
-//   $username.addClass('username');
-//   $username.text(message.username);
-//   $message.text(message.text);
-//   $('#chats').append($username);
-//   $('.username').append($message);
-//   //$('body').append('#chats');
-
-
-// };
-
 app.renderRoom = function(room) {
-  var $orig = $('<p></p>');
-  $orig.text(room);
-  $('#roomSelect').append($orig);
+  $.ajax({
+    // This is the url you should use to communicate with the parse API server.
+    url: 'http://parse.atx.hackreactor.com/chatterbox/classes/messages',
+    type: 'GET',
+    data: {order:'-createdAt'},
+    contentType: 'application/json',
+    success: function (data) {
+      console.log('DATA is equal to', data);
+      $('#chats').html('');
+      for (var i = 0; i < data.results.length; i++) {
+        if (data.results[i].roomname === room) {
+          app.renderMessage(data.results[i]);
+        } 
+      }
+      
+    },
+    error: function (data) {
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+      console.error('chatterbox: Failed to fetch message', data);
+    }
+  });
 
 };
 
